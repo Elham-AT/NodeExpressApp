@@ -1,11 +1,72 @@
 <html>
-   <body>
-      
-      <form action = "http://127.0.0.1:8081/process_post" method = "POST">
-         Name: <input type = "text" name = "name"> <br>
-         Email: <input type = "text" name = "email">
-         <input type = "submit" value = "Submit">
-      </form>
-      
-   </body>
+
+<head>
+   <script>
+      function getData() {
+         fetch("/api/users", {
+            method: "GET",
+            headers: { 'Content-Type': 'application/json' }
+         }).then((response) => response.json())
+            .then((data) => {
+
+               var body = document.getElementsByTagName('body')[0];
+               while (body.firstChild) {
+                  body.removeChild(body.firstChild);
+               }
+               var tbl = document.createElement('table');
+               tbl.style.width = '100%';
+               tbl.setAttribute('border', '1');
+               var tbdy = document.createElement('tbody');
+
+               var headerRow = document.createElement('tr');
+               var headers = ["Id", "Name", "Email", "Action"];
+               headers.forEach(header => {
+                  var th = document.createElement('th');
+                  th.innerHTML = header;
+                  headerRow.appendChild(th);
+               });
+               tbdy.appendChild(headerRow);
+
+               data.forEach(user => {
+                  var tr = document.createElement('tr');
+
+                  var td = document.createElement('td');
+                  td.innerHTML = user.id;
+                  tr.appendChild(td);
+
+                  td = document.createElement('td');
+                  td.innerHTML = user.name;
+                  tr.appendChild(td);
+
+                  td = document.createElement('td');
+                  td.innerHTML = user.email;
+                  tr.appendChild(td);
+
+
+                  td = document.createElement('td');
+                  var button = document.createElement('button');
+                  button.innerHTML = "Delete";
+                  button.onclick = function () {
+                     fetch("/api/users/" + user.id, {
+                        method: "DELETE"
+                     }).then(() => {
+                        getData();
+                     });
+                  };
+                  td.appendChild(button);
+                  tr.appendChild(td);
+
+                  tbdy.appendChild(tr);
+               });
+               tbl.appendChild(tbdy);
+               body.appendChild(tbl)
+
+            });
+      }
+   </script>
+</head>
+
+<body onload="getData()">
+</body>
+
 </html>

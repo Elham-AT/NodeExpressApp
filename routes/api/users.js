@@ -6,7 +6,7 @@ const uuid = require("uuid");
 
 let users = require("../../Users");
 
- 
+
 
 router.get("/", (req, res) => {
 
@@ -14,13 +14,13 @@ router.get("/", (req, res) => {
 
 });
 
- 
+
 
 router.get("/:id", (req, res) => {
 
   const found = users.some(user => user.id === parseInt(req.params.id));
 
- 
+
 
   if (found) {
 
@@ -34,13 +34,19 @@ router.get("/:id", (req, res) => {
 
 });
 
- 
+
 
 router.post("/", (req, res) => {
 
+  var maxId = 0;
+  users.forEach(user => {
+    if (user.id > maxId)
+      maxId = user.id;
+  });
+
   const newUser = {
 
-    id: uuid.v4(),
+    id: maxId + 1,
 
     name: req.body.name,
 
@@ -48,7 +54,7 @@ router.post("/", (req, res) => {
 
   };
 
- 
+
 
   if (!newUser.name || !newUser.email) {
 
@@ -94,7 +100,7 @@ router.put("/:id", (req, res) => {
 
 });
 
- 
+
 
 //Delete User
 
@@ -122,6 +128,6 @@ router.delete("/:id", (req, res) => {
 
 });
 
- 
+
 
 module.exports = router;
